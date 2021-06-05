@@ -52,7 +52,8 @@ class _HomePageState extends State<HomePage> {
   void addToCart({produitId, qte, posId, pu, delay}) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String pos_vente_id = prefs.getString("pos_vente_id") ?? "";
-    EasyLoading.show(status: "ajout en cours...");
+    //EasyLoading.show(status: "ajout en cours...");
+    Loading.show(context);
     try {
       HttpService.getCartDetails(
               produitId: produitId,
@@ -66,7 +67,7 @@ class _HomePageState extends State<HomePage> {
           .then((data) {
         print(data.commande.status);
         if (data.commande.status == "success") {
-          EasyLoading.dismiss();
+          Loading.dismiss(context);
           String arrJson = jsonEncode(data.commande.detail);
           prefs.setString("pos_vente_id", data.commande.posVenteId.toString());
           prefs.setString("cartJsonArr", arrJson);
@@ -76,8 +77,8 @@ class _HomePageState extends State<HomePage> {
             cartCount = data.commande.detail.length;
           });
           prefs.getString("cartJsonArr");
-        }
-        else{
+        } else {
+          Loading.dismiss(context);
           EasyLoading.showInfo("Echec d'ajout au panier !");
         }
       });
@@ -93,7 +94,7 @@ class _HomePageState extends State<HomePage> {
       Iterable i = jsonDecode(jsonData);
 
       List<Detail> details =
-      List<Detail> .from(i.map((model) => Detail.fromJson(model)));
+          List<Detail>.from(i.map((model) => Detail.fromJson(model)));
       Navigator.push(
           context, SlideRightRoute(page: CartPage(cartDetails: details)));
     } catch (e) {
@@ -162,9 +163,7 @@ class _HomePageState extends State<HomePage> {
             ),
             position: BadgePosition.topEnd(top: 8, end: 3),
             child: IconButton(
-                icon: Icon(Icons.shopping_basket),
-                onPressed: getCart
-            ),
+                icon: Icon(Icons.shopping_basket), onPressed: getCart),
           ),
           popMenu(context)
         ],
@@ -255,10 +254,10 @@ class _HomePageState extends State<HomePage> {
                                         posId:
                                             snapshot.data.produits[index].posId,
                                         qte: counterController.text,
-                                        delay: snapshot
-                                            .data.produits[index].delaiLivraison,
-                                        pu: snapshot
-                                            .data.produits[index].prixUnitaire)),
+                                        delay: snapshot.data.produits[index]
+                                            .delaiLivraison,
+                                        pu: snapshot.data.produits[index]
+                                            .prixUnitaire)),
                               );
                             });
                       }
@@ -275,9 +274,8 @@ class _HomePageState extends State<HomePage> {
     await Future.delayed(Duration(seconds: 8));
     Navigator.pushAndRemoveUntil(
         context,
-        MaterialPageRoute(
-            builder: (context) => HomeScreenCost()),
-            (Route<dynamic> route) => false);
+        MaterialPageRoute(builder: (context) => HomeScreenCost()),
+        (Route<dynamic> route) => false);
     return null;
   }
 
