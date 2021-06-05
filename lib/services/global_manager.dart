@@ -9,10 +9,7 @@ class Manager{
   Stream<int> get cartCount => _cartCount.stream;
 
   Stream<Cart> get cartView async*{
-    while(true){
-      await Future.delayed(Duration(milliseconds: 500));
-      yield await HttpService.getCartDetails();
-    }
+    yield await HttpService.getCartDetails();
   }
 
   Manager(){

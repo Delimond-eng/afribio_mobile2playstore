@@ -44,4 +44,23 @@ class CartManager {
         List<Detail>.from(i.map((model) => Detail.fromJson(model)));
     return detailList;
   }
+
+  Stream<List<Detail>> get cartList async*{
+    while(true){
+      await Future.delayed(Duration(milliseconds: 500));
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      String jsonCartArr = prefs.getString("cartJsonArr");
+      Iterable i = jsonDecode(jsonCartArr);
+      List<Detail> detailList =List<Detail>.from(i.map((model) => Detail.fromJson(model)));
+      yield detailList;
+    }
+  }
+
+  final StreamController<int> _cartCount = StreamController<int>();
+  Stream<int> get cartCount => _cartCount.stream;
+
+  CartManager(){
+    cartList.listen((list)=> _cartCount.add(list.length));
+  }
+
 }

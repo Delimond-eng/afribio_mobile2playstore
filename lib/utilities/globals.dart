@@ -9,7 +9,7 @@ showAlertDialog(
   // set up the buttons
   Widget cancelButton = FlatButton(
     child: Text(
-      "Annuler".toUpperCase(),
+      "Annuler",
       style: TextStyle(
           fontWeight: FontWeight.w500,
           fontSize: 15,
@@ -20,7 +20,7 @@ showAlertDialog(
   );
   Widget continueButton = FlatButton(
     child: Text(
-      "Valider".toUpperCase(),
+      "Valider",
       style: TextStyle(
           fontWeight: FontWeight.w500,
           fontSize: 15,
@@ -86,7 +86,7 @@ showAlertVerificationDialog(
     color: Colors.green,
     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
     child: Text(
-      "Valider".toUpperCase(),
+      "Valider",
       style: TextStyle(
           fontWeight: FontWeight.w500,
           fontSize: 15,
@@ -155,7 +155,7 @@ showAlertGetAdresseDialog(
   Widget continueButton = FlatButton(
     color: Colors.green,
     child: Text(
-      "Valider la commande".toUpperCase(),
+      "Valider la commande",
       style: TextStyle(
           fontWeight: FontWeight.w500,
           fontSize: 15,
@@ -178,7 +178,7 @@ showAlertGetAdresseDialog(
           width: 5,
         ),
         Text(
-          "Adresse utilisateur",
+          "Adresse de livraison",
           style: TextStyle(fontSize: 15.0),
         ),
       ],
@@ -217,4 +217,51 @@ showAlertGetAdresseDialog(
       return alert;
     },
   );
+}
+
+
+class Loading{
+  static showWithContent(context,{content}) {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          content: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Text("$content"),
+              CircularProgressIndicator(
+                strokeWidth: 2,
+                valueColor: new AlwaysStoppedAnimation<Color>(Colors.black45),
+              )
+            ],
+          ),
+        );
+      },
+    );
+  }
+  static show(context) {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          content: Center(
+            child: CircularProgressIndicator(
+              strokeWidth: 2,
+              valueColor: new AlwaysStoppedAnimation<Color>(Colors.black45),
+            ),
+          )
+        );
+      },
+    );
+  }
+
+  static dismiss(context){
+    Navigator.pop(context);
+  }
+
+
 }

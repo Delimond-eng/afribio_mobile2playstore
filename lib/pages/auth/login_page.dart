@@ -79,7 +79,7 @@ class _LoginPageState extends State<LoginPage> {
                 ),
 
                 InputText(
-                  hintText: 'Entrez votre email...',
+                  hintText: 'Entrez votre email | n° téléphone...',
                   icon: Icons.person_outline,
                   inputController: _textEmail,
                   isPassWord: false,

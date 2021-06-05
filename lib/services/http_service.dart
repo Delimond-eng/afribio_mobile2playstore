@@ -9,7 +9,7 @@ import 'package:geolocator/geolocator.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 
 class HttpService {
-  static String url = 'https://afribio.org';
+  static String url = 'https://internal-test.afribio.org';
 
   static Future<ProductModel> getAllProduct() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -26,6 +26,7 @@ class HttpService {
       body: jsonEncode(<String, dynamic>{
         'gps_position': gpsPosition,
         'acheteur_id': acheteurId,
+        'app_version': "6.0"
       }),
     );
     try {
@@ -79,8 +80,7 @@ class HttpService {
       }
       return Cart.fromJson(jsonDecode(response.body));
     } catch (e) {
-      EasyLoading.showInfo("Echec d'ajout de produit au panier !",
-          duration: Duration(seconds: 2));
+
     }
   }
 
@@ -101,6 +101,27 @@ class HttpService {
     }
   }
 
+  static Future cancelCommand({posVenteId}) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String acheteurId = prefs.getString("acheteur_id");
+    try{
+      final response = await http.post(
+          Uri.parse('${HttpService.url}/acquereurs/commandes/annuler'),
+          headers: {HttpHeaders.authorizationHeader: 'tP@d_4gB42c'},
+          body: jsonEncode(<String, dynamic>{
+            "acheteur_id": acheteurId,
+            "pos_vente_id": posVenteId
+          }));
+
+      if (response.statusCode == 200) {
+        return jsonDecode(response.body);
+      }
+    }
+    catch(e){
+      EasyLoading.showError("Echec d'annulation !");
+    }
+  }
+
   static Future<UserCommands> getUserCommandes() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String acheteurId = prefs.getString("acheteur_id");
@@ -109,22 +130,6 @@ class HttpService {
         Uri.parse('${HttpService.url}/acquereurs/commandes'),
         headers: {HttpHeaders.authorizationHeader: 'tP@d_4gB42c'},
         body: jsonEncode(<String, dynamic>{"acheteur_id": acheteurId}));
-
-    if (response.statusCode == 200) {
-      return UserCommands.fromJson(jsonDecode(response.body));
-    }
-  }
-
-  static Future cancelCommand({posVenteId}) async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    String acheteurId = prefs.getString("acheteur_id");
-    final response = await http.post(
-        Uri.parse('${HttpService.url}/acquereurs/commandes/annuler'),
-        headers: {HttpHeaders.authorizationHeader: 'tP@d_4gB42c'},
-        body: jsonEncode(<String, dynamic>{
-          "acheteur_id": acheteurId,
-          "pos_vente_id": posVenteId
-        }));
 
     if (response.statusCode == 200) {
       return UserCommands.fromJson(jsonDecode(response.body));

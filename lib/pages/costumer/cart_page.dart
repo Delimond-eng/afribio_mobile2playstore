@@ -19,15 +19,14 @@ class CartPage extends StatefulWidget {
 }
 
 class _CartPageState extends State<CartPage> {
-  int cartTotal = 0;
+  double cartTotal = 0;
   final adresseText = TextEditingController();
 
   void getCartTotal() {
     for (int i = 0; i < widget.cartDetails.length; i++) {
       setState(() {
-        cartTotal += (int.parse(widget.cartDetails[i].prixUnitaire)) *
-                (int.parse(widget.cartDetails[i].quantite)) ??
-            0;
+        cartTotal += (double.parse(widget.cartDetails[i].prixUnitaire)) *
+                (double.parse(widget.cartDetails[i].quantite));
       });
     }
   }
@@ -36,6 +35,38 @@ class _CartPageState extends State<CartPage> {
   void initState() {
     super.initState();
     getCartTotal();
+  }
+
+
+  void deleteFromCart({int index}) async{
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    try{
+      String jsonData = prefs.getString('cartJsonArr');
+      Iterable i = jsonDecode(jsonData);
+      List<Detail> existCart = List<Detail>.from(i.map((model)=>Detail.fromJson(model)));
+      existCart.removeAt(index);
+      String data = jsonEncode(existCart);
+      prefs.setInt('cart_count', existCart.length);
+      prefs.setString("cartJsonArr", data);
+      setState(() {
+        widget.cartDetails.removeAt(index);
+        double total = 0;
+        for(int i=0; i<widget.cartDetails.length; i++){
+          double pu = double.parse(existCart[i].prixUnitaire);
+          double qte = double.parse(widget.cartDetails[i].quantite);
+          total += pu *qte;
+        }
+        setState(() {
+          cartTotal = 0;
+          cartTotal = total;
+        });
+      });
+
+    }
+    catch(e)
+    {
+      print('error $e');
+    }
   }
 
   @override
@@ -117,8 +148,6 @@ class _CartPageState extends State<CartPage> {
                                 title: "Alert de suppression",
                                 context: context,
                                 onOk: () async {
-                                  SharedPreferences prefs =
-                                      await SharedPreferences.getInstance();
                                   EasyLoading.show();
                                   await HttpService.deleteItemToCommand(
                                           posVenteId: posVenteId,
@@ -128,27 +157,8 @@ class _CartPageState extends State<CartPage> {
                                     EasyLoading.dismiss();
                                     String status = res["reponse"]["status"];
                                     if (status == "success") {
-                                      EasyLoading.showToast(
-                                          "vous venez d'enlever un produit dans votre panier !",
-                                          duration: Duration(seconds: 2));
-                                      setState(() {
-                                        widget.cartDetails.removeAt(index);
-                                        for (int i = 0;
-                                            i < widget.cartDetails.length;
-                                            i++) {
-                                          setState(() {
-                                            cartTotal = 0;
-                                            cartTotal += int.parse(widget
-                                                    .cartDetails[i].quantite) *
-                                                int.parse(widget.cartDetails[i]
-                                                    .prixUnitaire);
-                                          });
-                                        }
-                                      });
-                                      List<Detail> restoreDetail =
-                                          widget.cartDetails;
-                                      String data = jsonEncode(restoreDetail);
-                                      prefs.setString("cartJsonArr", data);
+                                      EasyLoading.dismiss();
+                                      deleteFromCart(index: index);
                                       Navigator.pop(context);
                                     }
                                   });
@@ -238,7 +248,7 @@ class _CartPageState extends State<CartPage> {
                                         "votre commande est effectuée !",
                                         duration: Duration(seconds: 2));
                                     prefs.setString("pos_vente_id", "");
-                                    prefs.setString("cartJsonArr", "");
+                                    prefs.setString("cartJsonArr", "[]");
                                     prefs.setInt("cart_count", 0);
 
                                     Navigator.pushAndRemoveUntil(

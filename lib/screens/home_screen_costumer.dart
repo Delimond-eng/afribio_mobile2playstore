@@ -1,11 +1,7 @@
-import 'dart:async';
 
-import 'package:afribio/pages/costumer/account_page.dart';
-import 'package:afribio/pages/costumer/cart_page.dart';
 import 'package:afribio/pages/costumer/home_page.dart';
 import 'package:afribio/pages/costumer/user_command_page.dart';
 import 'package:flutter/material.dart';
-import 'package:badges/badges.dart';
 import 'package:afribio/utilities/globals.dart';
 
 class HomeScreenCost extends StatefulWidget {

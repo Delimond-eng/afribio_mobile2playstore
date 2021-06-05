@@ -1,10 +1,11 @@
 import 'dart:convert';
 
 //import 'package:afribio/models/cart_detail_model.dart';
+import 'package:afribio/models/cart_detail_model.dart';
 import 'package:afribio/models/produit_model.dart';
 import 'package:afribio/pages/auth/login_page.dart';
 import 'package:afribio/pages/costumer/cart_page.dart';
-import 'package:afribio/services/cart_manage_service.dart';
+import 'package:afribio/screens/home_screen_costumer.dart';
 import 'package:afribio/services/global_manager.dart';
 //import 'package:afribio/services/cart_manage_service.dart';
 import 'package:afribio/services/http_service.dart';
@@ -76,9 +77,27 @@ class _HomePageState extends State<HomePage> {
           });
           prefs.getString("cartJsonArr");
         }
+        else{
+          EasyLoading.showInfo("Echec d'ajout au panier !");
+        }
       });
     } catch (e) {
       print("error from : $e");
+    }
+  }
+
+  void getCart() async {
+    try {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      String jsonData = prefs.getString('cartJsonArr');
+      Iterable i = jsonDecode(jsonData);
+
+      List<Detail> details =
+      List<Detail> .from(i.map((model) => Detail.fromJson(model)));
+      Navigator.push(
+          context, SlideRightRoute(page: CartPage(cartDetails: details)));
+    } catch (e) {
+      EasyLoading.showInfo('le panier est vide !!');
     }
   }
 
@@ -120,7 +139,22 @@ class _HomePageState extends State<HomePage> {
         ),
         iconTheme: IconThemeData(color: Colors.green[900]),
         actions: [
-
+          /*StreamBuilder<int>(
+              stream: manager.cartCount,
+              builder: (context, snapshot) {
+                return Badge(
+                  badgeContent: Text(
+                    (snapshot.data ?? 0).toString(),
+                    style: TextStyle(color: Colors.white),
+                  ),
+                  position: BadgePosition.topEnd(top: 8, end: 3),
+                  child: IconButton(
+                      icon: Icon(Icons.notifications),
+                      onPressed: getCart
+                  ),
+                );
+              }),
+           */
           Badge(
             badgeContent: Text(
               (cartCount ?? 0).toString(),
@@ -129,14 +163,8 @@ class _HomePageState extends State<HomePage> {
             position: BadgePosition.topEnd(top: 8, end: 3),
             child: IconButton(
                 icon: Icon(Icons.shopping_basket),
-                onPressed: () {
-                  CartManager.getCart().then((value){
-                    Navigator.push(
-                        context, SlideRightRoute(page: CartPage(
-                      cartDetails: value,
-                    )));
-                  });
-                }),
+                onPressed: getCart
+            ),
           ),
           popMenu(context)
         ],
@@ -176,68 +204,81 @@ class _HomePageState extends State<HomePage> {
           Expanded(
             child: Container(
                 margin: EdgeInsets.only(left: 10, right: 10, top: 10),
-                child: FutureBuilder<ProductModel>(
-                  future: HttpService.getAllProduct(),
-                  builder: (context, snapshot) {
-                    if (snapshot.data == null) {
-                      return GridView.builder(
-                          gridDelegate:
-                              SliverGridDelegateWithFixedCrossAxisCount(
-                                  crossAxisCount: (MediaQuery.of(context)
-                                              .size
-                                              .shortestSide <=
-                                          600)
-                                      ? 2
-                                      : 8,
-                                  mainAxisSpacing: 15,
-                                  crossAxisSpacing: 15,
-                                  childAspectRatio: 0.75),
-                          itemCount: 6,
-                          itemBuilder: (context, index) {
-                            return GridShimmer();
-                          });
-                    } else {
-                      return GridView.builder(
-                          physics: BouncingScrollPhysics(),
-                          shrinkWrap: true,
-                          itemCount: snapshot.data.produits.length,
-                          gridDelegate:
-                              SliverGridDelegateWithFixedCrossAxisCount(
-                                  crossAxisCount: (MediaQuery.of(context)
-                                              .size
-                                              .shortestSide <=
-                                          600)
-                                      ? 2
-                                      : 8,
-                                  mainAxisSpacing: 15,
-                                  crossAxisSpacing: 15,
-                                  childAspectRatio: 0.75),
-                          itemBuilder: (context, index) {
-                            return CardProduct(
-                              produit: snapshot.data.produits[index],
-                              onSelectedProduct: () => commandBottomSheet(
-                                  context,
-                                  image: snapshot.data.produits[index].image,
-                                  titre: snapshot.data.produits[index].titre,
-                                  onAddToCart: () => addToCart(
-                                      produitId: snapshot
-                                          .data.produits[index].produitId,
-                                      posId:
-                                          snapshot.data.produits[index].posId,
-                                      qte: counterController.text,
-                                      delay: snapshot
-                                          .data.produits[index].delaiLivraison,
-                                      pu: snapshot
-                                          .data.produits[index].prixUnitaire)),
-                            );
-                          });
-                    }
-                  },
+                child: RefreshIndicator(
+                  onRefresh: onRefresh,
+                  child: FutureBuilder<ProductModel>(
+                    future: HttpService.getAllProduct(),
+                    builder: (context, snapshot) {
+                      if (snapshot.data == null) {
+                        return GridView.builder(
+                            gridDelegate:
+                                SliverGridDelegateWithFixedCrossAxisCount(
+                                    crossAxisCount: (MediaQuery.of(context)
+                                                .size
+                                                .shortestSide <=
+                                            600)
+                                        ? 2
+                                        : 8,
+                                    mainAxisSpacing: 15,
+                                    crossAxisSpacing: 15,
+                                    childAspectRatio: 0.75),
+                            itemCount: 6,
+                            itemBuilder: (context, index) {
+                              return GridShimmer();
+                            });
+                      } else {
+                        return GridView.builder(
+                            physics: BouncingScrollPhysics(),
+                            shrinkWrap: true,
+                            itemCount: snapshot.data.produits.length,
+                            gridDelegate:
+                                SliverGridDelegateWithFixedCrossAxisCount(
+                                    crossAxisCount: (MediaQuery.of(context)
+                                                .size
+                                                .shortestSide <=
+                                            600)
+                                        ? 2
+                                        : 8,
+                                    mainAxisSpacing: 15,
+                                    crossAxisSpacing: 15,
+                                    childAspectRatio: 0.75),
+                            itemBuilder: (context, index) {
+                              return CardProduct(
+                                produit: snapshot.data.produits[index],
+                                onSelectedProduct: () => commandBottomSheet(
+                                    context,
+                                    image: snapshot.data.produits[index].image,
+                                    titre: snapshot.data.produits[index].titre,
+                                    onAddToCart: () => addToCart(
+                                        produitId: snapshot
+                                            .data.produits[index].produitId,
+                                        posId:
+                                            snapshot.data.produits[index].posId,
+                                        qte: counterController.text,
+                                        delay: snapshot
+                                            .data.produits[index].delaiLivraison,
+                                        pu: snapshot
+                                            .data.produits[index].prixUnitaire)),
+                              );
+                            });
+                      }
+                    },
+                  ),
                 )),
           ),
         ],
       ),
     );
+  }
+
+  Future<Null> onRefresh() async {
+    await Future.delayed(Duration(seconds: 8));
+    Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(
+            builder: (context) => HomeScreenCost()),
+            (Route<dynamic> route) => false);
+    return null;
   }
 
   void commandBottomSheet(BuildContext context,

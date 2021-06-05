@@ -97,7 +97,7 @@ class _StartPageState extends State<StartPage> {
             Container(
               margin: EdgeInsets.all(15),
               child: Text(
-                "Faites vos achats sur afribio et profitez de nos tarifs reduits! la qualité supérieure est sur afribio! experimentez la rapidité dans la livraison de vos produit, au maximum 45' ",
+                "Faites vos achats sur afribio et profitez de nos tarifs reduits! la qualité supérieure est sur afribio! experimentez la rapidité dans la livraison de vos produits, au maximum 45' ",
                 textAlign: TextAlign.center,
                 style: TextStyle(
                     fontStyle: FontStyle.italic,
@@ -118,7 +118,7 @@ class _StartPageState extends State<StartPage> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: <Widget>[
                       Text(
-                        'Continuez'.toUpperCase(),
+                        'Continuer'.toUpperCase(),
                         style: TextStyle(
                             fontSize: 15,
                             color: Colors.white,
