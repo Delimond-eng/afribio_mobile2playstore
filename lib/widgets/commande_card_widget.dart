@@ -12,8 +12,7 @@ class CommandeCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
-      margin: EdgeInsets.only(bottom: 5),
-      color: Colors.grey[100],
+      margin: EdgeInsets.only(bottom: 5, left: 5, right: 5),
       child: Container(
         width: MediaQuery.of(context).size.width,
         height: 180,

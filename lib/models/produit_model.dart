@@ -31,6 +31,7 @@ class Produits {
   String delaiLivraison;
   String posId;
   String posStockId;
+  int stock;
 
   Produits(
       {this.produitId,
@@ -42,7 +43,7 @@ class Produits {
         this.prixUnitaire,
         this.delaiLivraison,
         this.posId,
-        this.posStockId});
+        this.posStockId,this.stock});
 
   Produits.fromJson(Map<String, dynamic> json) {
     produitId = json['produit_id'];
@@ -55,6 +56,7 @@ class Produits {
     delaiLivraison = json['delai_livraison'];
     posId = json['pos_id'];
     posStockId = json['pos_stock_id'];
+    stock = json['stock'];
   }
 
   Map<String, dynamic> toJson() {
@@ -69,6 +71,7 @@ class Produits {
     data['delai_livraison'] = this.delaiLivraison;
     data['pos_id'] = this.posId;
     data['pos_stock_id'] = this.posStockId;
+    data['stock'] = this.stock;
     return data;
   }
 }

@@ -49,39 +49,46 @@ class _HomePageState extends State<HomePage> {
     initCartCount();
   }
 
-  void addToCart({produitId, qte, posId, pu, delay}) async {
+  void addToCart({produitId, qte, posId, pu, delay, stock}) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String pos_vente_id = prefs.getString("pos_vente_id") ?? "";
-    //EasyLoading.show(status: "ajout en cours...");
-    Loading.show(context);
+    EasyLoading.show(status: "ajout en cours...");
+    print(stock);
     try {
-      HttpService.getCartDetails(
-              produitId: produitId,
-              quantite: qte,
-              posId: posId,
-              prix: pu,
-              delaiLivraison: delay,
-              posVenteId: pos_vente_id == null || pos_vente_id == ""
-                  ? ""
-                  : pos_vente_id)
-          .then((data) {
-        print(data.commande.status);
-        if (data.commande.status == "success") {
-          Loading.dismiss(context);
-          String arrJson = jsonEncode(data.commande.detail);
-          prefs.setString("pos_vente_id", data.commande.posVenteId.toString());
-          prefs.setString("cartJsonArr", arrJson);
-          prefs.setInt("cart_count", data.commande.detail.length);
+      int quantite = int.parse(qte);
+      if(quantite>stock){
+        EasyLoading.showInfo("la quantité de ce produit restant est de $stock kg", duration: Duration(seconds: 1));
+        return;
+      }
+      else{
+        HttpService.getCartDetails(
+            produitId: produitId,
+            quantite: qte,
+            posId: posId,
+            prix: pu,
+            delaiLivraison: delay,
+            posVenteId: pos_vente_id == null || pos_vente_id == ""
+                ? ""
+                : pos_vente_id)
+            .then((data) {
+          print(data.commande.status);
+          if (data.commande.status == "success") {
+            EasyLoading.dismiss();
+            String arrJson = jsonEncode(data.commande.detail);
+            prefs.setString("pos_vente_id", data.commande.posVenteId.toString());
+            prefs.setString("cartJsonArr", arrJson);
+            prefs.setInt("cart_count", data.commande.detail.length);
 
-          setState(() {
-            cartCount = data.commande.detail.length;
-          });
-          prefs.getString("cartJsonArr");
-        } else {
-          Loading.dismiss(context);
-          EasyLoading.showInfo("Echec d'ajout au panier !");
-        }
-      });
+            setState(() {
+              cartCount = data.commande.detail.length;
+            });
+            prefs.getString("cartJsonArr");
+          } else {
+            EasyLoading.dismiss();
+            EasyLoading.showInfo("Echec d'ajout au panier !");
+          }
+        });
+      }
     } catch (e) {
       print("error from : $e");
     }
@@ -257,7 +264,10 @@ class _HomePageState extends State<HomePage> {
                                         delay: snapshot.data.produits[index]
                                             .delaiLivraison,
                                         pu: snapshot.data.produits[index]
-                                            .prixUnitaire)),
+                                            .prixUnitaire,
+                                        stock: snapshot.data.produits[index].stock
+                                    ),
+                                ),
                               );
                             });
                       }

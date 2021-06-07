@@ -119,9 +119,16 @@ class _LoginPageState extends State<LoginPage> {
                               duration: Duration(milliseconds: 1000));
                           return;
                         } else {
-                          if (_textEmail.text == "test@2021") {
-                            HttpService.url =
-                                "https://internal-test.afribio.org";
+                          if (_textEmail.text.contains("test@"))
+                          {
+                            setState(() {
+                              _textEmail.text =_textEmail.text.replaceAll("test@", "");
+                            });
+                            HttpService.url ="https://internal-test.afribio.org";
+                            prefs.setBool("isTest", true);
+                          }
+                          else{
+                            prefs.setBool("isTest", false);
                           }
                           EasyLoading.show(
                               status: "traitement en cours...",

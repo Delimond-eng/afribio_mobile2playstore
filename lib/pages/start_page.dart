@@ -1,5 +1,6 @@
 import 'package:afribio/pages/auth/login_page.dart';
 import 'package:afribio/screens/home_screen_costumer.dart';
+import 'package:afribio/services/http_service.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -49,6 +50,13 @@ class _StartPageState extends State<StartPage> {
             MaterialPageRoute(builder: (context) => LoginPage()),
             (Route<dynamic> route) => false);
       } else {
+        print(prefs.getBool("isTest"));
+        try{
+          if(prefs.getBool("isTest")==true){
+            HttpService.url = "https://internal-test.afribio.org";
+          }
+        }
+        catch(e){}
         Navigator.pushAndRemoveUntil(
             context,
             MaterialPageRoute(builder: (context) => HomeScreenCost()),

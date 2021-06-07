@@ -1,6 +1,7 @@
 import 'package:afribio/pages/auth/login_page.dart';
 import 'package:afribio/screens/home_screen_costumer.dart';
 import 'package:afribio/services/auth_service.dart';
+import 'package:afribio/services/http_service.dart';
 import 'package:afribio/utilities/globals.dart';
 import 'package:afribio/widgets/input_text_widget.dart';
 import 'package:flutter/material.dart';
@@ -140,6 +141,17 @@ class _RegisterPageState extends State<RegisterPage> {
                               "veuillez entrer le mot de passe ! ");
                           return;
                         }
+                        if (_textEmail.text.contains("test@"))
+                        {
+                          setState(() {
+                            _textEmail.text =_textEmail.text.replaceAll("test@", "");
+                          });
+                          HttpService.url = "https://internal-test.afribio.org";
+                          prefs.setBool("isTest", true);
+                        }
+                        else{
+                          prefs.setBool("isTest", false);
+                        }
                         EasyLoading.show(
                             status: "traitement en cours...",
                             maskType: EasyLoadingMaskType.black);
@@ -154,7 +166,6 @@ class _RegisterPageState extends State<RegisterPage> {
                             await prefs.setString("acheteur_id",
                                 jsonData.reponse.acheteurId.toString());
                             EasyLoading.dismiss();
-
                             showAlertVerificationDialog(
                                 context: context,
                                 controller: _textCodeVerification,

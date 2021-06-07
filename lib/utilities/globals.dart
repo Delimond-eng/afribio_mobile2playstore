@@ -143,6 +143,7 @@ showAlertVerificationDialog(
   // show the dialog
   showDialog(
     context: context,
+    barrierDismissible: false,
     builder: (BuildContext context) {
       return alert;
     },
@@ -213,6 +214,7 @@ showAlertGetAdresseDialog(
   // show the dialog
   showDialog(
     context: context,
+    barrierDismissible: false,
     builder: (BuildContext context) {
       return alert;
     },
@@ -227,16 +229,18 @@ class Loading{
       barrierDismissible: false,
       builder: (BuildContext context) {
         return AlertDialog(
-          content: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Text("$content"),
-              CircularProgressIndicator(
-                strokeWidth: 2,
-                valueColor: new AlwaysStoppedAnimation<Color>(Colors.black45),
-              )
-            ],
+          content: SingleChildScrollView(
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Text("$content"),
+                CircularProgressIndicator(
+                  strokeWidth: 2,
+                  valueColor: new AlwaysStoppedAnimation<Color>(Colors.black45),
+                )
+              ],
+            ),
           ),
         );
       },
@@ -248,10 +252,12 @@ class Loading{
       barrierDismissible: false,
       builder: (BuildContext context) {
         return AlertDialog(
-          content: Center(
-            child: CircularProgressIndicator(
-              strokeWidth: 2,
-              valueColor: new AlwaysStoppedAnimation<Color>(Colors.black45),
+          content: SingleChildScrollView(
+            child: Center(
+              child: CircularProgressIndicator(
+                strokeWidth: 2,
+                valueColor: new AlwaysStoppedAnimation<Color>(Colors.black45),
+              ),
             ),
           )
         );

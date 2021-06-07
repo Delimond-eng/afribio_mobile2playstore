@@ -9,7 +9,7 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 class Authenticate extends HttpService {
   //Customer authenticate
   static Future<UserLogin> loginCustomer(
-      {url, String email, String pwd}) async {
+      {String email, String pwd}) async {
     final response = await http.post(
       Uri.parse('${HttpService.url}/acquereurs/login'),
       headers: {
@@ -42,11 +42,6 @@ class Authenticate extends HttpService {
         'pass': pwd,
       }),
     );
-    final json = jsonDecode(response.body);
-    if(json["error"] != null || json["error"] !=""){
-      EasyLoading.showInfo(json["error"]);
-      return null;
-    }
     if (response.statusCode == 200) {
       return UserRegister.fromJson(jsonDecode(response.body));
     } else {

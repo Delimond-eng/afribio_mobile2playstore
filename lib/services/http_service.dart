@@ -9,8 +9,7 @@ import 'package:geolocator/geolocator.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 
 class HttpService {
-  static String url = 'https://internal-test.afribio.org';
-
+  static String url = 'https://afribio.org';
   static Future<ProductModel> getAllProduct() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     Position position = await Geolocator.getCurrentPosition(
